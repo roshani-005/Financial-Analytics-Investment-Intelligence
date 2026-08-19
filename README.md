@@ -1,31 +1,94 @@
 # Financial Data Intelligence & Investment Analytics
 
-An end-to-end financial analytics project built around real historical **Tesla (TSLA)** market data. The project demonstrates Python data gathering/cleansing, ETL, PostgreSQL relational design, advanced SQL, Power BI analytics, XGBoost forecasting, database optimization, and a basic safe natural-language-to-SQL concept.
+An end-to-end **financial data intelligence platform** designed around real market data and an extensible company-fundamentals layer. The project is intentionally focused on Python data gathering/cleansing, ETL, PostgreSQL/DBMS, advanced SQL, Power BI, relational database design, optimization, analytics, and basic GenAI.
 
-## Dataset
+## Business objective
 
-The supplied source contains **2,766 daily records from 2015-01-02 through 2025-12-31** with Date, Open, High, Low, Close and Volume. The raw source has no missing values and no duplicate rows.
+Turn raw market and company-financial data into a trusted analytical model that can answer:
 
-A real source sample is committed at `data/raw/TSLA_sample.csv`. Place the complete supplied file at `data/raw/TSLA.csv` before running the full pipeline. The project does not replace missing financial fundamentals with synthetic values.
+- How is a company performing financially?
+- How is its market price behaving?
+- How are revenue, EBITDA, net income and EPS changing over reporting periods?
+- How do valuation and profitability metrics compare across companies/sectors?
+- Which companies satisfy configurable financial screening criteria?
+
+This is an **analytics and screening project**, not personalized investment advice.
+
+## Data sources
+
+### Market data
+The supplied TSLA source contains **2,766 daily records from 2015-01-02 through 2025-12-31** with Date, Open, High, Low, Close and Volume. A sample is committed at `data/raw/TSLA_sample.csv`.
+
+### Fundamentals
+The project now supports a separate, real company-fundamentals source. Put a verified CSV at:
+
+`data/raw/company_fundamentals.csv`
+
+Expected minimum fields:
+
+`Ticker, Company, Report_Date/Year, Revenue, EBITDA, Net_Income, EPS`
+
+Optional fields such as `Total_Assets`, `Total_Debt`, `Market_Cap`, `Enterprise_Value`, `Sector`, and `Industry` enable additional valuation analysis. **No financial fundamentals are fabricated by the project.**
 
 ## Architecture
 
 ```text
-TSLA CSV
-   ↓
-Python ETL
-   ↓
-Cleaning + validation + feature engineering
-   ↓
-PostgreSQL relational model
-   ↓
-SQL analytics (Joins / CTEs / Views / Window Functions / Triggers)
-   ↓
-Power BI dashboard
-   ↓
-XGBoost next-day close forecasting
-   ↓
-Basic safe natural-language → SQL concept
+REAL MARKET DATA + REAL COMPANY FUNDAMENTALS
+                    ↓
+              Python ETL
+                    ↓
+       Cleaning + normalization
+                    ↓
+          Validation + quality checks
+                    ↓
+              PostgreSQL
+                    ↓
+          Relational / star model
+                    ↓
+        Advanced SQL analytics
+        ├── Joins
+        ├── CTEs
+        ├── Window functions
+        ├── Views
+        └── Triggers / audit controls
+                    ↓
+                Power BI
+                    ↓
+        Financial intelligence
+        ├── Company performance
+        ├── Market performance
+        ├── Profitability
+        ├── Valuation
+        ├── Sector comparison
+        └── Screening
+                    ↓
+        Basic natural-language → SQL
+```
+
+## Repository structure
+
+```text
+Financial-Analytics-Investment-Intelligence/
+├── data/
+│   ├── raw/
+│   │   ├── TSLA_sample.csv
+│   │   └── company_fundamentals.csv   # supplied/verified source
+│   └── processed/
+├── src/
+│   ├── etl.py
+│   ├── fundamentals_etl.py
+│   ├── load_postgres.py
+│   └── run_pipeline.py
+├── sql/
+│   ├── schema.sql
+│   ├── analytics.sql
+│   ├── fundamental_analytics.sql
+│   └── triggers.sql
+├── powerbi/
+│   └── DASHBOARD.md
+├── genai/
+│   └── text_to_sql.py
+└── reports/
 ```
 
 ## Run locally
@@ -35,37 +98,34 @@ pip install -r requirements.txt
 python src/run_pipeline.py
 ```
 
-Outputs:
-- `data/processed/tsla_daily_features.csv`
-- `data/processed/data_quality_report.csv`
-- `reports/forecast_test_results.csv`
-- `reports/forecast_metrics.json`
+For the full financial-intelligence workflow, place the verified fundamentals CSV in `data/raw/company_fundamentals.csv` and run the ETL before loading PostgreSQL.
 
-## PostgreSQL
+## SQL analytics
 
-1. Create a PostgreSQL database.
-2. Run `sql/schema.sql`.
-3. Use `src/load_postgres.py` to load the processed dataset.
-4. Run `sql/analytics.sql` and `sql/triggers.sql`.
+The project deliberately demonstrates the SQL skills required for an analyst/data-intelligence workflow:
+
+- Multi-table joins
+- CTEs
+- `LAG`, `LEAD`, `RANK`, `ROW_NUMBER`
+- Running calculations with window functions
+- Reusable views
+- Trigger-based audit controls
+- Indexes and query-friendly keys
 
 ## Power BI
 
-See `powerbi/DASHBOARD.md` for the four-page dashboard design and DAX measures.
+See `powerbi/DASHBOARD.md` for the dashboard specification:
+
+1. Executive Financial Overview
+2. Company Performance
+3. Market Performance & Risk
+4. Valuation & Screening
 
 ## Scope and honesty
 
-The project demonstrates Python, ETL, Power BI, DBMS, SQL, analytics, data-engineering, relational-design and basic GenAI concepts without falsely claiming technologies that are not implemented. Spark/Databricks/Snowflake are not falsely claimed.
+The project does not claim data or metrics that are not present in the supplied sources. In particular, revenue, EBITDA, EPS, market capitalization, P/E and EV/EBITDA are only calculated when their required real inputs are available.
 
-The supplied dataset is market-price data only, so this version focuses on market analytics and forecasting. It does **not** fabricate revenue, EBITDA, EPS, market capitalization, P/E or EV/EBITDA. A verified fundamentals dataset can later be joined by ticker and reporting period if fundamental valuation analysis is required.
-
-## Validation result from the full supplied source
-
-- 2,766 rows processed
-- 0 duplicate dates
-- 0 source missing values
-- 0 invalid OHLC relationships
-- 0 non-positive volumes
-- XGBoost chronological 80/20 holdout: MAE **22.17**, RMSE **36.18**
+Spark, Databricks and Snowflake are **not falsely claimed as implemented technologies**. Python is the implemented data-engineering layer.
 
 ## Disclaimer
 
