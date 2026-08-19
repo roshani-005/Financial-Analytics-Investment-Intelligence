@@ -1,0 +1,2 @@
+rows_after_cleaning,duplicate_dates,source_missing_values_before_feature_engineering,feature_warmup_nulls,invalid_ohlc,non_positive_volume
+2766,0,0,127,0,0
