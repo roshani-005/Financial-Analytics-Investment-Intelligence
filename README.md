@@ -4,9 +4,9 @@ An end-to-end financial analytics project built around real historical **Tesla (
 
 ## Dataset
 
-The supplied `data/raw/TSLA.csv` contains **2,766 daily records from 2015-01-02 through 2025-12-31** with Date, Open, High, Low, Close and Volume. The raw file has no missing values and no duplicate rows.
+The supplied source contains **2,766 daily records from 2015-01-02 through 2025-12-31** with Date, Open, High, Low, Close and Volume. The raw source has no missing values and no duplicate rows.
 
-The project does **not** invent revenue, EBITDA, EPS, P/E, EV/EBITDA or other financial fundamentals that are absent from the supplied source.
+A real source sample is committed at `data/raw/TSLA_sample.csv`. Place the complete supplied file at `data/raw/TSLA.csv` before running the full pipeline. The project does not replace missing financial fundamentals with synthetic values.
 
 ## Architecture
 
@@ -54,9 +54,18 @@ See `powerbi/DASHBOARD.md` for the four-page dashboard design and DAX measures.
 
 ## Scope and honesty
 
-The project demonstrates the requested Python, ETL, Power BI, DBMS, SQL, analytics, data-engineering, relational-design and GenAI concepts without falsely claiming technologies that are not implemented. Spark/Databricks/Snowflake are not required for this version.
+The project demonstrates Python, ETL, Power BI, DBMS, SQL, analytics, data-engineering, relational-design and basic GenAI concepts without falsely claiming technologies that are not implemented. Spark/Databricks/Snowflake are not falsely claimed.
 
-The supplied dataset is market-price data only, so this version focuses on market analytics and forecasting. A verified fundamentals dataset can later be joined by ticker and reporting period if fundamental valuation analysis is required.
+The supplied dataset is market-price data only, so this version focuses on market analytics and forecasting. It does **not** fabricate revenue, EBITDA, EPS, market capitalization, P/E or EV/EBITDA. A verified fundamentals dataset can later be joined by ticker and reporting period if fundamental valuation analysis is required.
+
+## Validation result from the full supplied source
+
+- 2,766 rows processed
+- 0 duplicate dates
+- 0 source missing values
+- 0 invalid OHLC relationships
+- 0 non-positive volumes
+- XGBoost chronological 80/20 holdout: MAE **22.17**, RMSE **36.18**
 
 ## Disclaimer
 
